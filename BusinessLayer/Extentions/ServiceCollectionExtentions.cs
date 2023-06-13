@@ -5,6 +5,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Extensions.Http;
 using System.Reflection;
 
 namespace BusinessLayer.Extentions;
@@ -41,11 +43,24 @@ public static class ServiceCollectionExtentions
             .AddSingleton<IApiLayerSettings, ApiLayerSettings>();
 
         serviceCollection
-            .AddHttpClient<IApiLayerHttpClient, ApiLayerHttpClient>();
+            .AddHttpClient<IApiLayerHttpClient, ApiLayerHttpClient>()
+            .AddPolicyHandler(GetRetryPolicy());
 
         return serviceCollection;
     }
 
+    /// <summary>
+    /// The policy is configured to try 3 times with an exponential retry, starting at 2 seconds.
+    /// </summary>
+    /// <returns></returns>
+    static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+    {
+        return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
+                                                                    retryAttempt)));
+    }
     /// <summary>
     /// Mediator dependencies
     /// </summary>
