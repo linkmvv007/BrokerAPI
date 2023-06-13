@@ -96,7 +96,6 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
         var result = new OutputBestRevenue();
         double max = double.MinValue;
 
-        var data = new OutputBestRevenue[Consts.UsdExchangeMoneyArray.Length];
         Parallel.ForEach(
             Consts.UsdExchangeMoneyArray,
             Consts.GetParallelOptions(),
@@ -114,7 +113,7 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
                                      Tool = item
                                  }).First();
 
-                lock (data)
+                lock (result)
                 {
                     if (bestDates.Revenue > max)
                     {
