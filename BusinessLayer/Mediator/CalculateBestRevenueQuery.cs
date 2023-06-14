@@ -93,40 +93,27 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
     /// <returns></returns>
     private static OutputBestRevenue CalculateFunc(Collection<OutputRates> rates, int dollarAmount)
     {
-        var result = new OutputBestRevenue();
-        double max = double.MinValue;
+        var data = new OutputBestRevenue[Consts.UsdExchangeMoneyArray.Length];
 
         Parallel.ForEach(
             Consts.UsdExchangeMoneyArray,
             Consts.GetParallelOptions(),
-            item =>
+            (item, state, i) =>
             {
-                var bestDates = (from sell in rates
-                                 from buy in rates
-                                 where sell.Date < buy.Date
-                                 orderby Calculate(sell, buy, dollarAmount, item) descending
-                                 select new OutputBestRevenue
-                                 {
-                                     SellDate = sell.Date,
-                                     BuyDate = buy.Date,
-                                     Revenue = Calculate(sell, buy, dollarAmount, item),
-                                     Tool = item
-                                 }).First();
-
-                lock (result)
-                {
-                    if (bestDates.Revenue > max)
-                    {
-                        max = bestDates.Revenue;
-                        result.Revenue = bestDates.Revenue;
-                        result.BuyDate = bestDates.BuyDate;
-                        result.SellDate = bestDates.SellDate;
-                        result.Tool = bestDates.Tool;
-                    }
-                }
+                data[i] = (from sell in rates
+                           from buy in rates
+                           where sell.Date < buy.Date
+                           orderby Calculate(sell, buy, dollarAmount, item) descending
+                           select new OutputBestRevenue
+                           {
+                               SellDate = sell.Date,
+                               BuyDate = buy.Date,
+                               Revenue = Calculate(sell, buy, dollarAmount, item),
+                               Tool = item
+                           }).First();
             });
 
-        return result;
+        return data.First(x => x.Revenue == data.Max(x => x.Revenue));
     }
 
     /// <summary>
