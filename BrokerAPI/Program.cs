@@ -1,10 +1,16 @@
+using BrokerAPI.Middleware;
 using BusinessLayer.Extentions;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    }); ;
 
 // Add service dependencies
 builder.Services.AddCommonServiceDependencies();
@@ -27,5 +33,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// handle for exceptions
+app.UseMiddleware<AppMiddlewareException>();
 
 app.Run();
