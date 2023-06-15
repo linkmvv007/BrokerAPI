@@ -38,7 +38,7 @@ public class ApiTests : BaseTest
 
         Assert.IsNotNull(result);
         Assert.That(result.Tool, Is.EqualTo("EUR"));
-        Assert.That(3, Is.EqualTo(result.Rates.Count));
+        Assert.That(result.Rates.Count, Is.EqualTo(3));
         Assert.That(result.SellDate, Is.EqualTo(TestConsts.MiddleDate));
         Assert.That(TestConsts.EndDate, Is.EqualTo(result.BuyDate));
     }

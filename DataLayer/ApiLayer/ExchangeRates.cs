@@ -29,7 +29,7 @@ public sealed class ExchangeRates
     /// Rates against that currency
     /// </summary>
     [JsonPropertyName("base")]
-    public string Base { get; set; }
+    public required string Base { get; set; }
 
     /// <summary>
     /// Date of exchange rates
@@ -41,5 +41,5 @@ public sealed class ExchangeRates
     /// Exchange rates
     /// </summary>
     [JsonPropertyName("rates")]
-    public Rates Rates { get; set; }
+    public required Rates Rates { get; set; }
 }

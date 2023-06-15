@@ -13,7 +13,7 @@ public class GetRatesQuery : IRequest<OutputExchangeRates>
     /// <summary>
     /// Input parameters
     /// </summary>
-    public BestContext Context { get; set; }
+    public required BestContext Context { get; set; }
 }
 
 /// <summary>

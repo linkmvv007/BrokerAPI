@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Settings;
+#pragma warning disable CS8601
 
 internal class RedisSettings : IRedisSettings
 {
@@ -14,6 +15,6 @@ internal class RedisSettings : IRedisSettings
         Url = config["Redis:Url"];
         Prefix = config["Redis:RedisPrefix"];
     }
-    public string Url { get; set; }
-    public string Prefix { get; set; }
+    public required string Url { get; set; }
+    public required string Prefix { get; set; }
 }
