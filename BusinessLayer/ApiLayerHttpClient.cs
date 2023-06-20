@@ -1,9 +1,7 @@
 ﻿using BusinessLayer.Interfaces;
 using DataLayer.ApiLayer;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace BusinessLayer;
 
@@ -15,13 +13,13 @@ public class ApiLayerHttpClient : IApiLayerHttpClient
     private const string USD = "USD";
     private readonly HttpClient _httpClient;
     private readonly IApiLayerSettings _settings;
-    private readonly IDistributedCache _cache;
+    private readonly ICacheService _cache;
     /// <summary>
     /// The logger
     /// </summary>
     private readonly ILogger<ApiLayerHttpClient> _logger;
 
-    const string ExchangeTemplateUrl = "{0}fixer/{1}?base=USD&symbols={2}";
+    private const string ExchangeTemplateUrl = "{0}fixer/{1}?base=USD&symbols={2}";
 
     /// <summary>
     /// Initialize a new instance of <see cref="ApiLayerHttpClient"/>
@@ -33,7 +31,7 @@ public class ApiLayerHttpClient : IApiLayerHttpClient
     public ApiLayerHttpClient(ILogger<ApiLayerHttpClient> logger,
         HttpClient httpClient,
         IApiLayerSettings settings,
-        IDistributedCache cache)
+        ICacheService cache)
     {
         _logger = logger;
         _httpClient = httpClient;
@@ -56,33 +54,29 @@ public class ApiLayerHttpClient : IApiLayerHttpClient
         var dateKey = date.ToString("yyyy-MM-dd");
         var cacheKey = Consts.GetCacheKey(USD, dateKey);
 
-        var cacheData = await _cache.GetAsync(cacheKey);
-        if (cacheData is not null)
-        {
-            return JsonSerializer.Deserialize<ExchangeRates>(cacheData);
-        }
-
-        var uri = new Uri(string.Format(ExchangeTemplateUrl, _settings.Url, dateKey, Consts.UsdExchangeMoney));
-
-        ExchangeRates? ret;
-        try
-        {
-            ret = await _httpClient.GetFromJsonAsync<ExchangeRates>(uri);
-
-            if (ret is null || !ret.Success || ret.Rates is null)
+        return await _cache.GetAsync<ExchangeRates>(
+            cacheKey,
+            async () =>
             {
-                _logger.LogError($"API Layer returned an error for date : {date}");
-                throw new ApplicationException($"API Layer returned an error for date : {date}");
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, $"Error API Layer For date: {date}");
-            throw;
-        }
+                ExchangeRates? ret;
+                var uri = new Uri(string.Format(ExchangeTemplateUrl, _settings.Url, dateKey, Consts.UsdExchangeMoney));
+                try
+                {
+                    ret = await _httpClient.GetFromJsonAsync<ExchangeRates>(uri);
 
-        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(ret), Consts.GetDistributedCacheEntryOptions);
+                    if (ret is null || !ret.Success || ret.Rates is null)
+                    {
+                        _logger.LogError($"API Layer returned an error for date : {date}");
+                        throw new ApplicationException($"API Layer returned an error for date : {date}");
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError(ex, $"Error API Layer For date: {date}");
+                    throw;
+                }
 
-        return ret;
+                return ret;
+            });
     }
 }

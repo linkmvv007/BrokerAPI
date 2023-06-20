@@ -40,10 +40,17 @@ public class AppMiddlewareException
         }
         catch (NotSupportedException exp)
         {
-            await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
+            await HandleExceptionAsync(context, exp, HttpStatusCode.InternalServerError);
         }
         catch (InvalidOperationException exp)
-
+        {
+            await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
+        }
+        catch (HttpRequestException exp)
+        {
+            await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
+        }
+        catch (ApplicationException exp)
         {
             await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
         }

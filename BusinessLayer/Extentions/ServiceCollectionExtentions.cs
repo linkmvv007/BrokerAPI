@@ -1,4 +1,5 @@
-﻿using BusinessLayer.Interfaces;
+﻿using BusinessLayer.Cache;
+using BusinessLayer.Interfaces;
 using BusinessLayer.Settings;
 using BusinessLayer.Validators;
 using FluentValidation;
@@ -89,7 +90,8 @@ public static class ServiceCollectionExtentions
     private static IServiceCollection AddRedisDependencies(this IServiceCollection serviceCollection) =>
         serviceCollection
         .AddSingleton<IRedisSettings, RedisSettings>()
-        .AddRedisCache();
+        .AddRedisCache()
+        .AddSingleton<ICacheService, CacheService>();
 
     /// <summary>
     /// Add redis caching
