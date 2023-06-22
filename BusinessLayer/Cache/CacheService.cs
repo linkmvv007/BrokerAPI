@@ -1,4 +1,4 @@
-﻿using BusinessLayer.Interfaces;
+﻿using BusinessLayer.Cache.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 

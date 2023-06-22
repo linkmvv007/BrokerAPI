@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Cache;
+using BusinessLayer.Cache.Interfaces;
 using BusinessLayer.Interfaces;
 using BusinessLayer.Settings;
 using BusinessLayer.Validators;

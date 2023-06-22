@@ -1,4 +1,5 @@
-﻿using BusinessLayer.Interfaces;
+﻿using BusinessLayer.Cache.Interfaces;
+using BusinessLayer.Interfaces;
 using DataLayer.ApiLayer;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;

@@ -1,4 +1,4 @@
-﻿namespace BusinessLayer.Interfaces;
+﻿namespace BusinessLayer.Cache.Interfaces;
 
 /// <summary>
 /// Caching service interface
