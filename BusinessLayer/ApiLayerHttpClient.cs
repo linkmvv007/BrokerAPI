@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Cache.Interfaces;
+using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
 using DataLayer.ApiLayer;
 using Microsoft.Extensions.Logging;
@@ -59,25 +60,24 @@ public class ApiLayerHttpClient : IApiLayerHttpClient
             cacheKey,
             async () =>
             {
-                ExchangeRates? ret;
                 var uri = new Uri(string.Format(ExchangeTemplateUrl, _settings.Url, dateKey, Consts.UsdExchangeMoney));
                 try
                 {
-                    ret = await _httpClient.GetFromJsonAsync<ExchangeRates>(uri);
+                    var ret = await _httpClient.GetFromJsonAsync<ExchangeRates>(uri);
 
                     if (ret is null || !ret.Success || ret.Rates is null)
                     {
-                        _logger.LogError($"API Layer returned an error for date : {date}");
-                        throw new ApplicationException($"API Layer returned an error for date : {date}");
+                        _logger.LogError(ApiHttpClientException.Error_FromAPI(date));
+                        throw new ApiHttpClientException(ApiHttpClientException.Error_FromAPI(date));
                     }
+
+                    return ret;
                 }
                 catch (HttpRequestException ex)
                 {
                     _logger.LogError(ex, $"Error API Layer For date: {date}");
                     throw;
                 }
-
-                return ret;
             });
     }
 }

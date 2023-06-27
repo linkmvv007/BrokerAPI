@@ -1,4 +1,5 @@
-﻿using BusinessLayer.Extentions;
+﻿using BusinessLayer.Exceptions;
+using BusinessLayer.Extentions;
 using BusinessLayer.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -47,6 +48,10 @@ public class AppMiddlewareException
             await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
         }
         catch (HttpRequestException exp)
+        {
+            await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
+        }
+        catch (ApiHttpClientException exp)
         {
             await HandleExceptionAsync(context, exp, HttpStatusCode.BadRequest);
         }

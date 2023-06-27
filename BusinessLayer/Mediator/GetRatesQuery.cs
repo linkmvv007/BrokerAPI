@@ -1,7 +1,10 @@
 ﻿using BusinessLayer.Contexts;
+using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
 using DataLayer;
+using DataLayer.ApiLayer;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Mediator;
 
@@ -23,17 +26,22 @@ public class GetRatesHandler : IRequestHandler<GetRatesQuery, OutputExchangeRate
 {
     private readonly IApiLayerHttpClient _httpClient;
     private readonly IMediator _mediator;
-
+    private readonly ILogger<GetRatesHandler> _logger;
 
     /// <summary>
     /// Initialize a new instance of <see cref="GetRatesHandler"/>
     /// </summary>
     /// <param name="httpClient"></param>
     /// <param name="mediator"></param>
-    public GetRatesHandler(IApiLayerHttpClient httpClient, IMediator mediator)
+    /// <param name="logger"></param>
+    public GetRatesHandler(
+        IApiLayerHttpClient httpClient,
+        IMediator mediator,
+        ILogger<GetRatesHandler> logger)
     {
         _mediator = mediator;
         _httpClient = httpClient;
+        _logger = logger;
     }
 
     /// <summary>
@@ -57,9 +65,17 @@ public class GetRatesHandler : IRequestHandler<GetRatesQuery, OutputExchangeRate
 
         var responses = await Task.WhenAll(tasks);
 
+        ExchangeRates[] data = responses!.Where(x => x is not null).ToArray();
+
+        if (data is not { Length: > 0 })
+        {
+            _logger.LogError(ApiHttpClientException.Error_NoDataRates);
+            throw new ApiHttpClientException(ApiHttpClientException.Error_NoDataRates);
+        }
+
         return await _mediator.Send(new CalculateBestRevenueQuery
         {
-            ExchangeRates = responses,
+            ExchangeRates = data,
             DollarAmount = dollarAmount,
             EndDate = endDate,
             StartDate = startDate

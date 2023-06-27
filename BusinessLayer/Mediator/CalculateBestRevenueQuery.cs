@@ -1,8 +1,6 @@
 ﻿using DataLayer;
 using DataLayer.ApiLayer;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Collections.ObjectModel;
 
 namespace BusinessLayer.Mediator;
 
@@ -14,7 +12,7 @@ public class CalculateBestRevenueQuery : IRequest<OutputExchangeRates>
     /// <summary>
     /// Dollar exchange rates
     /// </summary>
-    public ExchangeRates?[]? ExchangeRates { get; set; }
+    public required ExchangeRates[] ExchangeRates { get; set; }
     /// <summary>
     /// Start date of currency trading
     /// </summary>
@@ -35,16 +33,11 @@ public class CalculateBestRevenueQuery : IRequest<OutputExchangeRates>
 /// </summary>
 public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRevenueQuery, OutputExchangeRates>
 {
-
-    private readonly ILogger<CalculateBestRevenueQueryHandler> _logger;
-
     /// <summary>
     /// Initialize a new instance of <see cref="CalculateBestRevenueQueryHandler"/>
     /// </summary>
-    /// <param name="logger"></param>
-    public CalculateBestRevenueQueryHandler(ILogger<CalculateBestRevenueQueryHandler> logger)
+    public CalculateBestRevenueQueryHandler()
     {
-        _logger = logger;
     }
 
     /// <summary>
@@ -55,25 +48,20 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
     /// <returns></returns>
     public async Task<OutputExchangeRates> Handle(CalculateBestRevenueQuery request, CancellationToken cancellationToken)
     {
-        var result = new OutputExchangeRates();
-        foreach (var data in request.ExchangeRates!.OrderBy(x => x!.Date))
+        var result = new OutputExchangeRates
         {
-            if (data is not null)
+            Rates = request.ExchangeRates!
+            .Where(x => x is not null)
+            .OrderBy(x => x.Date)
+            .Select(data => new OutputRates
             {
-                result.Rates.Add(new OutputRates
-                {
-                    Date = data.Date,
-                    EUR = data.Rates.EUR,
-                    GBP = data.Rates.GBP,
-                    JPY = data.Rates.JPY,
-                    RUB = data.Rates.RUB,
-                });
-            }
-            else
-            {
-                _logger.LogWarning($"Met days without exchange rates");
-            }
-        }
+                Date = data.Date,
+                EUR = data.Rates.EUR,
+                GBP = data.Rates.GBP,
+                JPY = data.Rates.JPY,
+                RUB = data.Rates.RUB,
+            }).ToList()
+        };
 
         var bestDates = await Task.Run(() => CalculateFunc(result.Rates, request.DollarAmount));
 
@@ -91,7 +79,7 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
     /// <param name="rates">exchange rates</param>
     /// <param name="dollarAmount">amount of money in dollars</param>
     /// <returns></returns>
-    private static OutputBestRevenue CalculateFunc(Collection<OutputRates> rates, int dollarAmount)
+    private static OutputBestRevenue CalculateFunc(IList<OutputRates> rates, int dollarAmount)
     {
         var data = new OutputBestRevenue[Consts.UsdExchangeMoneyArray.Length];
 

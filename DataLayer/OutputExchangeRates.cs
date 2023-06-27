@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace DataLayer;
+﻿namespace DataLayer;
 
 /// <summary>
 /// Describes json with data on the best exchange currency for the highest revenue
@@ -10,10 +8,12 @@ public sealed class OutputExchangeRates : OutputBestRevenue
     /// <summary>
     /// Initialize a new instance of <see cref="OutputExchangeRates"/>
     /// </summary>
-    public OutputExchangeRates() => Rates = new Collection<OutputRates>();
+    public OutputExchangeRates()
+    {
+    }
 
     /// <summary>
     /// Exchange rates
     /// </summary>
-    public Collection<OutputRates> Rates { get; set; }
+    required public List<OutputRates> Rates { get; init; }
 }
