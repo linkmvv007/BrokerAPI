@@ -50,7 +50,7 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
     {
         var result = new OutputExchangeRates
         {
-            Rates = request.ExchangeRates!
+            Rates = request.ExchangeRates
             .Where(x => x is not null)
             .OrderBy(x => x.Date)
             .Select(data => new OutputRates
