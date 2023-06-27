@@ -65,7 +65,7 @@ public class ApiLayerHttpClient : IApiLayerHttpClient
                 {
                     var ret = await _httpClient.GetFromJsonAsync<ExchangeRates>(uri);
 
-                    if (ret is null || !ret.Success || ret.Rates is null)
+                    if (ret is null or { Success: false } or { Rates: null })
                     {
                         _logger.LogError(ApiHttpClientException.Error_FromAPI(date));
                         throw new ApiHttpClientException(ApiHttpClientException.Error_FromAPI(date));
