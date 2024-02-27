@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace BusinessLayer.Extentions;
+namespace BusinessLayer.Extensions;
 
 /// <summary>
 ///     Extension for working with exceptions

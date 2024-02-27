@@ -12,7 +12,7 @@ public class CalculateBestRevenueQuery : IRequest<OutputExchangeRates>
     /// <summary>
     /// Dollar exchange rates
     /// </summary>
-    public required ExchangeRates[] ExchangeRates { get; set; }
+    public required ExchangeRates[] ExchangeRates { get; init; }
     /// <summary>
     /// Start date of currency trading
     /// </summary>
@@ -24,7 +24,7 @@ public class CalculateBestRevenueQuery : IRequest<OutputExchangeRates>
     /// <summary>
     /// Amount of dollars to exchange
     /// </summary>
-    public int DollarAmount { get; set; }
+    public int DollarAmount { get; init; }
 
 }
 
@@ -51,19 +51,18 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
         var result = new OutputExchangeRates
         {
             Rates = request.ExchangeRates
-            .Where(x => x is not null)
             .OrderBy(x => x.Date)
             .Select(data => new OutputRates
             {
                 Date = data.Date,
-                EUR = data.Rates.EUR,
-                GBP = data.Rates.GBP,
-                JPY = data.Rates.JPY,
-                RUB = data.Rates.RUB,
+                Eur = data.Rates.Eur,
+                Gbp = data.Rates.Gbp,
+                Jpy = data.Rates.Jpy,
+                Rub = data.Rates.Rub,
             }).ToList()
         };
 
-        var bestDates = await Task.Run(() => CalculateFunc(result.Rates, request.DollarAmount));
+        var bestDates = await Task.Run(() => CalculateFunc(result.Rates, request.DollarAmount), cancellationToken);
 
         result.Revenue = bestDates.Revenue;
         result.BuyDate = bestDates.BuyDate;
@@ -91,12 +90,12 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
                 data[i] = (from sell in rates
                            from buy in rates
                            where sell.Date < buy.Date
-                           orderby Calculate(sell, buy, dollarAmount, item) descending
+                           orderby CalculateRevenue(sell, buy, dollarAmount, item) descending
                            select new OutputBestRevenue
                            {
                                SellDate = sell.Date,
                                BuyDate = buy.Date,
-                               Revenue = Calculate(sell, buy, dollarAmount, item),
+                               Revenue = CalculateRevenue(sell, buy, dollarAmount, item),
                                Tool = item
                            }).First();
             });
@@ -110,19 +109,19 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
     /// <param name="sell">Date of sale</param>
     /// <param name="buy">date of purchase</param>
     /// <param name="dollarAmount">amount of money in dollars</param>
-    /// <param name="currencyName">currency name <see cref="exchangeMoneyArray"/></param>
+    /// <param name="currencyName">currency name <see cref="Consts.UsdExchangeEnum"/></param>
     /// <returns></returns>
     /// <exception cref="NotSupportedException">exception if unsupported currency for exchange</exception>
-    private static double Calculate(OutputRates sell, OutputRates buy, int dollarAmount, string currencyName)
+    private static double CalculateRevenue(OutputRates sell, OutputRates buy, int dollarAmount, string currencyName)
     {
-        TimeSpan difference = buy.Date.Subtract(sell.Date);
+        var difference = buy.Date.Subtract(sell.Date);
 
         return currencyName switch
         {
-            "RUB" => (sell.RUB * dollarAmount / buy.RUB) - difference.Days,
-            "EUR" => (sell.EUR * dollarAmount / buy.EUR) - difference.Days,
-            "GBP" => (sell.GBP * dollarAmount / buy.GBP) - difference.Days,
-            "JPY" => (sell.JPY * dollarAmount / buy.JPY) - difference.Days,
+            "RUB" => buy.Rub == 0 ? 0 : (sell.Rub * dollarAmount / buy.Rub) - difference.Days,
+            "EUR" => buy.Eur == 0 ? 0 : (sell.Eur * dollarAmount / buy.Eur) - difference.Days,
+            "GBP" => buy.Gbp == 0 ? 0 : (sell.Gbp * dollarAmount / buy.Gbp) - difference.Days,
+            "JPY" => buy.Jpy == 0 ? 0 : (sell.Jpy * dollarAmount / buy.Jpy) - difference.Days,
             _ => throw new NotSupportedException($"{currencyName} is not supported.")
         };
     }

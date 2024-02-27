@@ -1,5 +1,5 @@
 using BrokerAPI.Middleware;
-using BusinessLayer.Extentions;
+using BusinessLayer.Extensions;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);

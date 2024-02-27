@@ -7,20 +7,20 @@ namespace BrokerUnitTest;
 /// <summary>
 /// Base API test template class
 /// </summary>
-public abstract class BaseAPITest
+public abstract class BaseApiTest
 {
-    public IServiceProvider ServiceProvider { get; private set; }
+    private IServiceProvider ServiceProvider { get; set; }
 
-    public IMediator Mediator { get; private set; }
+    protected IMediator Mediator { get; private set; }
 
     /// <summary>
-    /// Initialize a new instance of <see cref="BaseAPITest"/>
+    /// Initialize a new instance of <see cref="BaseApiTest"/>
     /// </summary>
-    public BaseAPITest()
+    protected BaseApiTest()
     {
         IServiceCollection serviceCollection = new ServiceCollection().AddLogging();
         IConfigurationRoot config = this.GetConfigurationBuilder().Build();
-        ServiceProvider = DISetup(serviceCollection, config);
+        ServiceProvider = DiSetup(serviceCollection, config);
 
         Mediator = ServiceProvider.GetRequiredService<IMediator>();
     }
@@ -29,5 +29,5 @@ public abstract class BaseAPITest
     {
         return new ConfigurationBuilder();
     }
-    protected abstract IServiceProvider DISetup(IServiceCollection serviceCollection, IConfigurationRoot config);
+    protected abstract IServiceProvider DiSetup(IServiceCollection serviceCollection, IConfigurationRoot config);
 }

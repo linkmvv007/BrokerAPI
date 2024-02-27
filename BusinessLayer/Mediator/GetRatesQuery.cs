@@ -52,9 +52,9 @@ public class GetRatesHandler : IRequestHandler<GetRatesQuery, OutputExchangeRate
     /// <returns></returns>
     public async Task<OutputExchangeRates> Handle(GetRatesQuery request, CancellationToken cancellationToken)
     {
-        var startDate = request.Context!.startDate;
-        var endDate = request.Context!.endDate;
-        var dollarAmount = request.Context!.moneyUsd;
+        var startDate = request.Context!.StartDate;
+        var endDate = request.Context!.EndDate;
+        var dollarAmount = request.Context!.MoneyUsd;
 
         TimeSpan difference = endDate.Date.Subtract(startDate.Date);
         int days = difference.Days;
@@ -69,8 +69,8 @@ public class GetRatesHandler : IRequestHandler<GetRatesQuery, OutputExchangeRate
 
         if (data is not { Length: > 0 })
         {
-            _logger.LogError(ApiHttpClientException.Error_NoDataRates);
-            throw new ApiHttpClientException(ApiHttpClientException.Error_NoDataRates);
+            _logger.LogError(ApiHttpClientException.ErrorNoDataRates);
+            throw new ApiHttpClientException(ApiHttpClientException.ErrorNoDataRates);
         }
 
         return await _mediator.Send(new CalculateBestRevenueQuery

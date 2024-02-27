@@ -12,15 +12,15 @@ public record BestContext
     /// period start date
     /// </summary>
     [Required]
-    public DateTime startDate { get; init; }
+    public DateTime StartDate { get; init; }
     /// <summary>
     /// period end date
     /// </summary>
     [Required]
-    public DateTime endDate { get; init; }
+    public DateTime EndDate { get; init; }
     /// <summary>
     /// Number of dollars to exchange
     /// </summary>
     [Required]
-    public int moneyUsd { get; init; } = 100;
+    public int MoneyUsd { get; init; } = 100;
 };

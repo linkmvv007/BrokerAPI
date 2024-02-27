@@ -9,18 +9,18 @@ public class Rates
     /// <summary>
     /// In rubles
     /// </summary>
-    public double RUB { get; set; }
+    public double Rub { get; init; }
     /// <summary>
     /// In Euro
     /// </summary>
-    public double EUR { get; set; }
+    public double Eur { get; set; }
     /// <summary>
     /// In pounds
     /// </summary>
-    public double GBP { get; set; }
+    public double Gbp { get; init; }
     /// <summary>
     /// In yen
     /// </summary>
-    public double JPY { get; set; }
+    public double Jpy { get; init; }
 }
 

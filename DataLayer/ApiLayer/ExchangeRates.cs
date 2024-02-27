@@ -41,5 +41,5 @@ public sealed class ExchangeRates
     /// Exchange rates
     /// </summary>
     [JsonPropertyName("rates")]
-    public required Rates Rates { get; set; }
+    public required Rates Rates { get; init; }
 }

@@ -47,7 +47,7 @@ public class ApiLayerHttpClientMock
 
             rates.Date = rates.Date.AddDays(dayNumber);
             if (dayNumber == 1)
-                rates.Rates.EUR += 10;
+                rates.Rates.Eur += 10;
 
             return rates;
         }

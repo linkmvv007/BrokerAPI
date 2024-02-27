@@ -7,10 +7,10 @@ namespace BrokerUnitTest;
 
 public class FinanceTests
 {
-    const string USD = "USD";
-    readonly DateTime startDate = DateTime.Now.Date.AddDays(-120);
-    readonly DateTime endDate = DateTime.Now.Date.AddDays(-90);
-    readonly Collection<ExchangeRates> currencyRates = new();
+    private const string Usd = "USD";
+    readonly DateTime _startDate = DateTime.Now.Date.AddDays(-120);
+    readonly DateTime _endDate = DateTime.Now.Date.AddDays(-90);
+    readonly Collection<ExchangeRates> _currencyRates = [];
 
 
     [SetUp]
@@ -22,31 +22,31 @@ public class FinanceTests
     /// <summary>
     /// Test data initialization
     /// </summary>
-    private void InitAPIData()
+    private void InitApiData()
     {
-        TimeSpan difference = endDate.Subtract(startDate);
-        int days = difference.Days;
-        for (int i = 0; i < days; i++)
+        var difference = _endDate.Subtract(_startDate);
+        var days = difference.Days;
+        for (var i = 0; i < days; i++)
         {
-            currencyRates.Add(new ExchangeRates
+            _currencyRates.Add(new ExchangeRates
             {
-                Base = USD,
-                Date = startDate.AddDays(i),
+                Base = Usd,
+                Date = _startDate.AddDays(i),
                 Rates = new Rates
                 {
-                    EUR = 0.91 + i * 0.01,
-                    GBP = 0.8 + i * 0.001,
-                    JPY = 133 + i * 0.2,
-                    RUB = 82 + i * 0.1
+                    Eur = 0.91 + i * 0.01,
+                    Gbp = 0.8 + i * 0.001,
+                    Jpy = 133 + i * 0.2,
+                    Rub = 82 + i * 0.1
                 }
             });
         }
 
-        currencyRates[28].Rates.EUR = 0.82;
+        _currencyRates[28].Rates.Eur = 0.82;
     }
 
     /// <summary>
-    /// Ñhecks parsing json into a typed object ExchangeRates
+    /// Checks parsing json into a typed object ExchangeRates
     /// </summary>
     [Test]
     public void CheckFixerApiParser()
@@ -67,12 +67,12 @@ public class FinanceTests
     public void EurRates()
     {
         // init data
-        InitAPIData();
+        InitApiData();
 
         // calculate
         var bestDates =
-            from sell in currencyRates
-            from buy in currencyRates
+            from sell in _currencyRates
+            from buy in _currencyRates
             where sell.Date < buy.Date
             orderby CalculateEur(sell, buy) descending
             select new { SellDate = sell.Date, BuyDate = buy.Date, Revenue = CalculateEur(sell, buy) };
@@ -82,16 +82,16 @@ public class FinanceTests
         Console.WriteLine($"{bestSellDate.SellDate}, {bestSellDate.BuyDate}, {bestSellDate.Revenue}");
 
         // Asserts
-        Assert.That(currencyRates[28].Date, Is.EqualTo(bestSellDate.BuyDate));
-        Assert.That(currencyRates[27].Date, Is.EqualTo(bestSellDate.SellDate));
+        Assert.That(_currencyRates[28].Date, Is.EqualTo(bestSellDate.BuyDate));
+        Assert.That(_currencyRates[27].Date, Is.EqualTo(bestSellDate.SellDate));
 
     }
     static double CalculateEur(ExchangeRates sell, ExchangeRates buy)
     {
         TimeSpan difference = buy.Date.Subtract(sell.Date);
-        int days = difference.Days;
+        var days = difference.Days;
 
-        return (sell.Rates.EUR * TestConsts.DollarAmount / buy.Rates.EUR) - days;
+        return (sell.Rates.Eur * TestConsts.DollarAmount / buy.Rates.Eur) - days;
     }
 
     /// <summary>
@@ -101,90 +101,90 @@ public class FinanceTests
     public void RubRates()
     {
         // init data
-        var currencyRates = new Collection<ExchangeRates>();
-        currencyRates.Add(
-            new ExchangeRates
+        var currencyRates = new Collection<ExchangeRates>
+        {
+            new()
             {
-                Base = USD,
+                Base = Usd,
                 Date = DateTime.Parse("2014-12-15"),
                 Rates = new Rates
                 {
-                    RUB = 60.17
+                    Rub = 60.17
                 }
-            });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-16"),
-            Rates = new Rates
+            },
+            new()
             {
-                RUB = 72.99
-            }
-        });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-17"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-16"),
+                Rates = new Rates
+                {
+                    Rub = 72.99
+                }
+            },
+            new()
             {
-                RUB = 66.01
-            }
-        });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-18"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-17"),
+                Rates = new Rates
+                {
+                    Rub = 66.01
+                }
+            },
+            new()
             {
-                RUB = 61.44
-            }
-        });
-
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-19"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-18"),
+                Rates = new Rates
+                {
+                    Rub = 61.44
+                }
+            },
+            new()
             {
-                RUB = 59.79
-            }
-        });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-20"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-19"),
+                Rates = new Rates
+                {
+                    Rub = 59.79
+                }
+            },
+            new()
             {
-                RUB = 59.79
-            }
-        });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-21"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-20"),
+                Rates = new Rates
+                {
+                    Rub = 59.79
+                }
+            },
+            new()
             {
-                RUB = 59.79
-            }
-        });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-22"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-21"),
+                Rates = new Rates
+                {
+                    Rub = 59.79
+                }
+            },
+            new()
             {
-                RUB = 54.78
-            }
-        });
-        currencyRates.Add(new ExchangeRates
-        {
-            Base = USD,
-            Date = DateTime.Parse("2014-12-23"),
-            Rates = new Rates
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-22"),
+                Rates = new Rates
+                {
+                    Rub = 54.78
+                }
+            },
+            new()
             {
-                RUB = 54.8
+                Base = Usd,
+                Date = DateTime.Parse("2014-12-23"),
+                Rates = new Rates
+                {
+                    Rub = 54.8
+                }
             }
-        });
+        };
 
         // calculate
         var bestDates = from sell in currencyRates
@@ -200,11 +200,12 @@ public class FinanceTests
         Assert.That(DateTime.Parse("2014-12-22"), Is.EqualTo(bestSellDate.BuyDate));
         Assert.That(DateTime.Parse("2014-12-16"), Is.EqualTo(bestSellDate.SellDate));
     }
-    static double CalculateRub(ExchangeRates sell, ExchangeRates buy)
-    {
-        TimeSpan difference = buy.Date.Subtract(sell.Date);
-        int days = difference.Days;
 
-        return (sell.Rates.RUB * TestConsts.DollarAmount / buy.Rates.RUB) - days;
+    private static double CalculateRub(ExchangeRates sell, ExchangeRates buy)
+    {
+        var difference = buy.Date.Subtract(sell.Date);
+        var days = difference.Days;
+
+        return (sell.Rates.Rub * TestConsts.DollarAmount / buy.Rates.Rub) - days;
     }
 }

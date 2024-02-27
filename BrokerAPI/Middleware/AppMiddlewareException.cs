@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.Exceptions;
-using BusinessLayer.Extentions;
+using BusinessLayer.Extensions;
 using BusinessLayer.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

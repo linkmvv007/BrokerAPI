@@ -8,7 +8,7 @@ namespace BusinessLayer.Helpers;
 /// </summary>
 public static class JsonHelper
 {
-    static readonly JsonSerializerOptions options = new()
+    static readonly JsonSerializerOptions Options = new()
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -16,7 +16,7 @@ public static class JsonHelper
 
     static JsonHelper()
     {
-        options.Converters.Add(new JsonStringEnumConverter());
+        Options.Converters.Add(new JsonStringEnumConverter());
     }
 
     /// <summary>
@@ -24,6 +24,6 @@ public static class JsonHelper
     /// </summary>
     public static string SerializeToString<T>(this T obj) where T : class
     {
-        return JsonSerializer.Serialize(obj, options);
+        return JsonSerializer.Serialize(obj, Options);
     }
 }

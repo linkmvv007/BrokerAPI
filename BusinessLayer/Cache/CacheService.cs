@@ -65,7 +65,8 @@ public class CacheService : ICacheService
     public async Task<T?> GetAsync<T>(string key, Func<Task<T>> factory, CancellationToken cancellationToken)
         where T : class
     {
-        T? cachedValue = await GetAsync<T>(key, cancellationToken);
+        var cachedValue = await GetAsync<T>(key, cancellationToken);
+
         if (cachedValue is not null)
         {
             return cachedValue;
@@ -73,10 +74,7 @@ public class CacheService : ICacheService
 
         cachedValue = await factory();
 
-        if (cachedValue is not null)
-        {
-            await SetAsync(key, cachedValue, cancellationToken);
-        }
+        await SetAsync(key, cachedValue, cancellationToken);
 
         return cachedValue;
     }

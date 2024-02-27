@@ -1,6 +1,6 @@
 ﻿using BrokerUnitTest.Mocks;
 using BusinessLayer;
-using BusinessLayer.Extentions;
+using BusinessLayer.Extensions;
 using BusinessLayer.Interfaces;
 using BusinessLayer.Mediator;
 using BusinessLayer.Validators;
@@ -16,19 +16,13 @@ namespace BrokerUnitTest;
 /// <summary>
 /// Initialization services
 /// </summary>
-public abstract class BaseTest : BaseAPITest
+public abstract class BaseTest : BaseApiTest
 {
-    protected override IServiceProvider DISetup(IServiceCollection serviceCollection, IConfigurationRoot config)
+    protected override IServiceProvider DiSetup(IServiceCollection serviceCollection, IConfigurationRoot config)
     {
-        serviceCollection.AddSingleton<IApiLayerSettings>(provider =>
-        {
-            return ApiLayerSettingMock.GetMock().Object;
-        });
+        serviceCollection.AddSingleton<IApiLayerSettings>(provider => ApiLayerSettingMock.GetMock().Object);
 
-        serviceCollection.AddSingleton<IApiLayerHttpClient>(provider =>
-        {
-            return ApiLayerHttpClientMock.GetMock().Object;
-        });
+        serviceCollection.AddSingleton<IApiLayerHttpClient>(provider => ApiLayerHttpClientMock.GetMock().Object);
 
         serviceCollection.AddSingleton(Mock.Of<ILogger<ApiLayerHttpClient>>());
         serviceCollection.AddSingleton(Mock.Of<ILogger<CalculateBestRevenueQueryHandler>>());

@@ -25,9 +25,9 @@ public class ApiTests : BaseTest
     {
         var context = new BestContext
         {
-            moneyUsd = TestConsts.DollarAmount,
-            startDate = TestConsts.StartDate,
-            endDate = TestConsts.EndDate,
+            MoneyUsd = TestConsts.DollarAmount,
+            StartDate = TestConsts.StartDate,
+            EndDate = TestConsts.EndDate,
         };
 
         var result = await Mediator.Send(new GetRatesQuery

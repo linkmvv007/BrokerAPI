@@ -10,17 +10,17 @@ public static class Consts
     /// <summary>
     /// List of currencies for dollar exchange
     /// </summary>
-    internal enum UsdExchangeEnum { RUB, EUR, GBP, JPY }
+    private enum UsdExchangeEnum { RUB, EUR, GBP, JPY }
     /// <summary>
     /// The number of processors for methods of the Parallel class
     /// </summary>
-    internal const int MaxDegreeOfParallelism = 5;
+    private const int MaxDegreeOfParallelism = 5;
 
     /// <summary>
     /// Cache period time
     /// </summary>
     /// 
-    internal static readonly DateTimeOffset CachePeriodTime = DateTimeOffset.MaxValue;
+    private static readonly DateTimeOffset CachePeriodTime = DateTimeOffset.MaxValue;
 
 
     /// <summary>

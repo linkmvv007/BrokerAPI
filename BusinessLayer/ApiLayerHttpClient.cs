@@ -12,7 +12,7 @@ namespace BusinessLayer;
 /// </summary>
 public class ApiLayerHttpClient : IApiLayerHttpClient
 {
-    private const string USD = "USD";
+    private const string Usd = "USD";
     private readonly HttpClient _httpClient;
     private readonly IApiLayerSettings _settings;
     private readonly ICacheService _cache;
@@ -54,7 +54,7 @@ public class ApiLayerHttpClient : IApiLayerHttpClient
     public async Task<ExchangeRates?> GetExchangeRatesAsync(DateTime date)
     {
         var dateKey = date.ToString("yyyy-MM-dd");
-        var cacheKey = Consts.GetCacheKey(USD, dateKey);
+        var cacheKey = Consts.GetCacheKey(Usd, dateKey);
 
         return await _cache.GetAsync<ExchangeRates>(
             cacheKey,

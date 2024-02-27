@@ -11,12 +11,12 @@ using Polly;
 using Polly.Extensions.Http;
 using System.Reflection;
 
-namespace BusinessLayer.Extentions;
+namespace BusinessLayer.Extensions;
 
 /// <summary>
 /// Adds additional libraries to the project with all necessary dependencies
 /// </summary>
-public static class ServiceCollectionExtentions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Common dependencies

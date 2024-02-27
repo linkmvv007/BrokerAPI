@@ -5,7 +5,7 @@
 /// </summary>
 public sealed class ApiHttpClientException : ApplicationException
 {
-    internal const string Error_NoDataRates = "No data rates from API";
+    internal const string ErrorNoDataRates = "No data rates from API";
 
     /// <summary>
     /// Initialize a new instance of <see cref="ApiHttpClientException"/>
