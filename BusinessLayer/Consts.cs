@@ -10,7 +10,7 @@ public static class Consts
     /// <summary>
     /// List of currencies for dollar exchange
     /// </summary>
-    private enum UsdExchangeEnum { RUB, EUR, GBP, JPY }
+    public enum UsdExchangeEnum { RUB, EUR, GBP, JPY }
     /// <summary>
     /// The number of processors for methods of the Parallel class
     /// </summary>
@@ -26,7 +26,7 @@ public static class Consts
     /// <summary>
     /// List of currencies for dollar exchange
     /// </summary>
-    public static readonly string[] UsdExchangeMoneyArray = Enum.GetNames(typeof(UsdExchangeEnum)).ToArray();
+    public static readonly UsdExchangeEnum[] UsdExchangeMoneyArray = Enum.GetValues<UsdExchangeEnum>();
 
     /// <summary>
     /// Url value parameters

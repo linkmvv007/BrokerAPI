@@ -96,7 +96,7 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
                                SellDate = sell.Date,
                                BuyDate = buy.Date,
                                Revenue = CalculateRevenue(sell, buy, dollarAmount, item),
-                               Tool = item
+                               Tool = item.ToString()
                            }).First();
             });
 
@@ -112,17 +112,17 @@ public class CalculateBestRevenueQueryHandler : IRequestHandler<CalculateBestRev
     /// <param name="currencyName">currency name <see cref="Consts.UsdExchangeEnum"/></param>
     /// <returns></returns>
     /// <exception cref="NotSupportedException">exception if unsupported currency for exchange</exception>
-    private static double CalculateRevenue(OutputRates sell, OutputRates buy, int dollarAmount, string currencyName)
+    private static double CalculateRevenue(OutputRates sell, OutputRates buy, int dollarAmount, Consts.UsdExchangeEnum currencyName)
     {
         var difference = buy.Date.Subtract(sell.Date);
 
         return currencyName switch
         {
-            "RUB" => buy.Rub == 0 ? 0 : (sell.Rub * dollarAmount / buy.Rub) - difference.Days,
-            "EUR" => buy.Eur == 0 ? 0 : (sell.Eur * dollarAmount / buy.Eur) - difference.Days,
-            "GBP" => buy.Gbp == 0 ? 0 : (sell.Gbp * dollarAmount / buy.Gbp) - difference.Days,
-            "JPY" => buy.Jpy == 0 ? 0 : (sell.Jpy * dollarAmount / buy.Jpy) - difference.Days,
-            _ => throw new NotSupportedException($"{currencyName} is not supported.")
+            Consts.UsdExchangeEnum.RUB => buy.Rub == 0 ? 0 : (sell.Rub * dollarAmount / buy.Rub) - difference.Days,
+            Consts.UsdExchangeEnum.EUR => buy.Eur == 0 ? 0 : (sell.Eur * dollarAmount / buy.Eur) - difference.Days,
+            Consts.UsdExchangeEnum.GBP => buy.Gbp == 0 ? 0 : (sell.Gbp * dollarAmount / buy.Gbp) - difference.Days,
+            Consts.UsdExchangeEnum.JPY => buy.Jpy == 0 ? 0 : (sell.Jpy * dollarAmount / buy.Jpy) - difference.Days,
+            _ => throw new NotSupportedException($"{currencyName.ToString()} is not supported.")
         };
     }
 }

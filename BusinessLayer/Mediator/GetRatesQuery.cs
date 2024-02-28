@@ -56,8 +56,8 @@ public class GetRatesHandler : IRequestHandler<GetRatesQuery, OutputExchangeRate
         var endDate = request.Context!.EndDate;
         var dollarAmount = request.Context!.MoneyUsd;
 
-        TimeSpan difference = endDate.Date.Subtract(startDate.Date);
-        int days = difference.Days;
+        var difference = endDate.Date.Subtract(startDate.Date);
+        var days = difference.Days;
 
         var tasks = Enumerable.Range(0, days + 1)
             .Select(i => _httpClient.GetExchangeRatesAsync(startDate.Date.AddDays(i)))
@@ -65,20 +65,19 @@ public class GetRatesHandler : IRequestHandler<GetRatesQuery, OutputExchangeRate
 
         var responses = await Task.WhenAll(tasks);
 
-        ExchangeRates[] data = responses!.Where(x => x is not null).ToArray();
+        var data = responses.Where(x => x is not null).ToArray();
 
-        if (data is not { Length: > 0 })
-        {
-            _logger.LogError(ApiHttpClientException.ErrorNoDataRates);
-            throw new ApiHttpClientException(ApiHttpClientException.ErrorNoDataRates);
-        }
+        if (data is { Length: > 0 })
+            return await _mediator.Send(new CalculateBestRevenueQuery
+            {
+                ExchangeRates = data as ExchangeRates[],
+                DollarAmount = dollarAmount,
+                EndDate = endDate,
+                StartDate = startDate
+            }, cancellationToken);
 
-        return await _mediator.Send(new CalculateBestRevenueQuery
-        {
-            ExchangeRates = data,
-            DollarAmount = dollarAmount,
-            EndDate = endDate,
-            StartDate = startDate
-        });
+
+        _logger.LogError(ApiHttpClientException.ErrorNoDataRates);
+        throw new ApiHttpClientException(ApiHttpClientException.ErrorNoDataRates);
     }
 }
